@@ -5,11 +5,16 @@ export const Login = () => {
   const [UserName, setuserName] = useState("");
   const [Password, setPassword] = useState("");
   const history = useHistory();
+  const [cross, setcross] = useState(true);
+  const [warning, setwarning] = useState(false);
   function handleLogin(e) {
     e.preventDefault();
     axios
       .get(
-        `https://www.smsgateway.center/library/api/self/ViewProfile/?userId=${UserName}&password=${Password}&format=json`
+        `https://www.smsgateway.center/library/api/self/ViewProfile/?userId=${UserName}&password=${Password}&format=json`,
+        {
+          credentials: "same-origin",
+        }
       )
       .then((data) => {
         if ("success" === data.data.status) {
@@ -19,6 +24,8 @@ export const Login = () => {
             JSON.stringify({ UserName: UserName, Password: Password })
           );
           history.push("/home");
+        } else {
+          setcross(true);
         }
       })
       .catch((e) => console.log(e));
@@ -26,9 +33,21 @@ export const Login = () => {
 
   return (
     <>
-      <div className="flex justify-center h-screen items-center bg-gray-100">
+      <div className="flex flex-col justify-center h-screen items-center bg-gray-100">
+        <h1 className="text-5xl mb-16 font-bold ">SMS Delivery Report</h1>
         <div className="w-full max-w-xl">
           <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h1 className="mb-5 font-bold text-2xl">Enter Login Credentials</h1>
+            <p
+              className={`text-red-400 mb-10 border-2 border-red-300 rounded py-2 cursor-pointer ${
+                !cross ? "hidden" : null
+              }`}
+              onClick={() => {
+                setcross(false);
+              }}
+            >
+              Enter Correct username and password : X
+            </p>
             <div className="mb-4">
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"

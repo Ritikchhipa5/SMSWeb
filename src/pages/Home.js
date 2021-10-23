@@ -1,26 +1,30 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 export const Home = () => {
   const [Data, setData] = useState([]);
   const [Profile, setProfile] = useState(false);
-  const [profileData, setprofileData] = useState({});
-  function showProfile() {
-    setProfile(!Profile);
-  }
-  useEffect(() => {}, [Data]);
+  const [profileData, setprofileData] = useState([]);
+  const d = new Date();
+  const date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  // davschool
+  // Davnarnaul123
+
   useEffect(() => {
     setprofileData(JSON.parse(localStorage.getItem("user")));
+
     axios
       .get(
-        `https://www.smsgateway.center/library/api/self/SMSDlr/?userId=${profileData.UserName}&password=${profileData.Password}&FromDate=2021-10-22&ToDate=2021-10-22&format=json`
+        `https://www.smsgateway.center/library/api/self/SMSDlr/?userId=${profileData.UserName}&password=${profileData.Password}&FromDate=${date}&ToDate=${date}&format=json`
       )
       .then((data) => {
         if ("success" === data.data.status) {
           setData(data.data.DLRReport);
+          setProfile(true);
         }
       })
       .catch((e) => console.log(e));
-  });
+  }, [profileData]);
+
   return (
     <>
       <div class="relative">
@@ -55,10 +59,7 @@ export const Home = () => {
               >
                 About
               </a>
-              <a
-                class="font-medium text-gray-500 hover:text-gray-900"
-                onClick={showProfile}
-              >
+              <a class="font-medium text-gray-500 hover:text-gray-900">
                 Profile
               </a>
               <a
@@ -139,9 +140,9 @@ export const Home = () => {
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
-                    {Data.length === 0 ? (
+                    {!Profile ? (
                       <>
-                        <td>adfadf</td>
+                        <h1>Data Not Found </h1>
                       </>
                     ) : (
                       Data.map((d, key) => <TableRow data={d} key={key} />)
@@ -153,7 +154,6 @@ export const Home = () => {
           </div>
         </div>
       </div>
-      {Profile ? <ViewProfile showProfile={showProfile} /> : null}
     </>
   );
 };
@@ -224,7 +224,6 @@ function Table(data) {
 }
 
 function TableRow(data, key) {
-  console.log(data);
   return (
     <>
       <tr key={key}>
@@ -271,38 +270,3 @@ function TableRow(data, key) {
     </>
   );
 }
-
-const ViewProfile = (props) => {
-  return (
-    <>
-      <div class=" absolute h-full left-0 top-0 r-0 b-0 w-full bg-gray-800 opacity-50 "></div>
-      <div
-        class=" absolute h-full left-0 top-0 r-0 b-0 w-full  border-0 cursor-pointer"
-        onClick={props.showProfile}
-      >
-        <div class="relative top-20 opacity-100 w-1/3 mx-auto rounded-xl bg-white items-center p-10">
-          <h1 className="text-2xl font-bold mb-5 text-purple-500">Profile</h1>
-          <div class="mb-5">
-            <h4>Popular SoftTech and Marketing Pvt. Ltd.</h4>
-            <p class="text-sm text-gray-500">Username: neha</p>
-          </div>
-          <div class="text-left my-10 ">
-            <h1 class="mb-2">Contact: 9930447726</h1>
-            <h1 class="mb-2">SMS Blance: 726</h1>
-            <h1 class="mb-2">
-              Address: Shop No. 225 & 226, Raghuleela Mega Mall, Behind Pohisar
-              Bus Depot, Kandivali West, Mumbai - 400067, Maharashtra, India
-            </h1>
-            <h1 class="mb-2">Website: http://www.smsgateway.center</h1>
-            <h1 class="mb-2">
-              Status:{" "}
-              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                Active
-              </span>
-            </h1>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
